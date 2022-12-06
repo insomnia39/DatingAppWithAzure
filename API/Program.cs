@@ -22,6 +22,8 @@ namespace DatingApp.FrontEndAPI
                 opt.UseCosmos(connectionString, databaseName);
             });
 
+            builder.Services.AddCors();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -30,6 +32,7 @@ namespace DatingApp.FrontEndAPI
 
             app.UseAuthorization();
 
+            app.UseCors(b => b.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200"));
 
             app.MapControllers();
 
