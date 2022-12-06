@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static DatingApp.DAL.Model.User;
 
 namespace DatingApp.FrontEndAPI.Controllers
 {
@@ -25,8 +26,10 @@ namespace DatingApp.FrontEndAPI.Controllers
             {
                 var config = new MapperConfiguration(cfg =>
                 {
-                    cfg.CreateMap<User, UserDto>();
-                    cfg.CreateMap<UserDto, User>();
+                    cfg.CreateMap<User, UserRequestDto>();
+                    cfg.CreateMap<UserRequestDto, User>();
+                    cfg.CreateMap<User, UserResponseDto>();
+                    cfg.CreateMap<UserResponseDto, User>();
                 });
 
                 _map = config.CreateMapper();
@@ -41,7 +44,7 @@ namespace DatingApp.FrontEndAPI.Controllers
             try
             {
                 var listUser = await _context.User.ToListAsync();
-                var dto = JsonConvert.SerializeObject(listUser);
+                var dto = _map.Map<List<UserResponseDto>>(listUser);
                 return new OkObjectResult(dto);
             }
             catch (Exception e)
@@ -51,7 +54,7 @@ namespace DatingApp.FrontEndAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] UserDto dto)
+        public async Task<IActionResult> CreateUser([FromBody] UserRequestDto dto)
         {
             try
             {
@@ -67,9 +70,19 @@ namespace DatingApp.FrontEndAPI.Controllers
         }
     }
 
-    public class UserDto
+    public class UserRequestDto
     {
+        [JsonPropertyName("username")]
         public string Username { get; set; }
-        public string Gender  { get; set; }
+        [JsonPropertyName("gender")]
+        public string Gender { get; set; }
+    }
+
+    public class UserResponseDto
+    {
+        [JsonPropertyName("username")]
+        public string Username { get; set; }
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
     }
 }
