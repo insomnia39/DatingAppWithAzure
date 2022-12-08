@@ -1,9 +1,6 @@
-using DatingApp.DAL;
+using DatingApp.FrontEndAPI.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace DatingApp.FrontEndAPI
 {
@@ -12,30 +9,21 @@ namespace DatingApp.FrontEndAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            string databaseName = Profile._containerName;
-            var connectionString = builder.Configuration.GetConnectionString("CosmosDb");
             // Add services to the container.
 
             builder.Services.AddControllers();
-            builder.Services.AddDbContext<ProfileContext>(opt =>
-            {
-                opt.UseCosmos(connectionString, databaseName);
-            });
-
-            builder.Services.AddCors();
+            builder.Services.AddApplicationServices(builder.Configuration);
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
 
             app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
             app.UseCors(b => b.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
-
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.MapControllers();
-
             app.Run();
         }
     }

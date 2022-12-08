@@ -2,6 +2,7 @@
 using DatingApp.DAL;
 using DatingApp.DAL.DTO.Account;
 using DatingApp.DAL.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace DatingApp.FrontEndAPI.Controllers
 {
+    [Authorize]
     public class UserController : BaseApiController
     {
         //private readonly ILogger _log;
@@ -35,6 +37,7 @@ namespace DatingApp.FrontEndAPI.Controllers
             _context ??= context;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetUser()
         {
@@ -50,15 +53,12 @@ namespace DatingApp.FrontEndAPI.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] UserRequestDto dto)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User>> GetUser(string id)
         {
             try
             {
-                var newUser = _map.Map<User>(dto);
-                await _context.User.AddAsync(newUser);
-                await _context.SaveChangesAsync();
-                return new CreatedResult("User", newUser);
+                return await _context.User.FindAsync(id);
             }
             catch (Exception e)
             {

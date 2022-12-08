@@ -1,8 +1,9 @@
-﻿using DatingApp.DAL;
+﻿using DatingApp.BLL.JWT;
+using DatingApp.DAL;
 using DatingApp.DAL.DTO.Account;
+using DatingApp.DAL.DTO.User;
 using DatingApp.DAL.Model;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -15,14 +16,16 @@ namespace DatingApp.FrontEndAPI.Controllers
     public class AccountController : BaseApiController
     {
         private readonly ProfileContext _context;
+        private readonly ITokenService _tokenService;
 
-        public AccountController(ProfileContext context)
+        public AccountController(ProfileContext context, ITokenService tokenService)
         {
+            _tokenService ??= tokenService;
             _context ??= context;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(RegisterDto dto)
+        public async Task<ActionResult<UserDto>> Register(RegisterDto dto)
         {
             if (UsernameExist(dto.Username)) return new BadRequestObjectResult("Username already taken");
 
@@ -39,15 +42,17 @@ namespace DatingApp.FrontEndAPI.Controllers
             _context.User.Add(user);
             await _context.SaveChangesAsync();
 
-            return user;
+            return new UserDto { Username = user.Username, Token = _tokenService.CreateToken(user) };
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult<User>> Login(LoginRequestDto dto)
+        public async Task<ActionResult<UserDto>> Login(LoginRequestDto dto)
         {
-            var user = await _context.User.SingleOrDefaultAsync(p => p.Username == dto.Username);
+            var users = _context.User.Where(p => p.Username == dto.Username.ToLower()).ToList();
 
-            if (user == null) return Unauthorized();
+            if (users.Count != 1) return Unauthorized();
+
+            var user = users.First();
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
 
@@ -58,7 +63,7 @@ namespace DatingApp.FrontEndAPI.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) return Unauthorized();
             }
 
-            return user;
+            return new UserDto { Username = user.Username, Token = _tokenService.CreateToken(user) };
         }
 
         public bool UsernameExist(string username)
