@@ -30,6 +30,8 @@ namespace DatingApp.DAL
                     entity.Property(p => p.Id).ToJsonProperty("id");
                     entity.Property(p => p.Gender).ToJsonProperty("gender");
                     entity.Property(p => p.Username).ToJsonProperty("username");
+                    entity.Property(p => p.PasswordHash).ToJsonProperty("passwordHash");
+                    entity.Property(p => p.PasswordSalt).ToJsonProperty("passwordSalt");
                 });
         }
     }
