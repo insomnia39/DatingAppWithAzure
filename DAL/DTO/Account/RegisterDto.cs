@@ -14,6 +14,7 @@ namespace DatingApp.DAL.DTO.Account
         public string Gender { get; set; }
 
         [Required]
+        [StringLength(8, MinimumLength = 4)]
         [JsonPropertyName("password")]
         public string Password { get; set; }
     }
