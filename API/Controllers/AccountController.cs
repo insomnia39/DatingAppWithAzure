@@ -50,7 +50,7 @@ namespace DatingApp.FrontEndAPI.Controllers
         {
             var users = _context.User.Where(p => p.Username == dto.Username.ToLower()).ToList();
 
-            if (users.Count != 1) return Unauthorized();
+            if (users.Count != 1) return new BadRequestObjectResult("Invalid username or password");
 
             var user = users.First();
 
@@ -60,7 +60,7 @@ namespace DatingApp.FrontEndAPI.Controllers
 
             for (int i = 0; i < computedHash.Length; i++)
             {
-                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized();
+                if (computedHash[i] != user.PasswordHash[i]) return new BadRequestObjectResult("Invalid username or password");
             }
 
             return new UserDto { Username = user.Username, Token = _tokenService.CreateToken(user) };
