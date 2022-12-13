@@ -1,4 +1,5 @@
 using DatingApp.FrontEndAPI.Extensions;
+using DatingApp.FrontEndAPI.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +18,7 @@ namespace DatingApp.FrontEndAPI
 
             var app = builder.Build();
 
+            app.UseMiddleware<ExceptionMiddleware>();
             // Configure the HTTP request pipeline.
 
             app.UseHttpsRedirection();
