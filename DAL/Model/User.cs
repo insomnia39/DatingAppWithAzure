@@ -1,6 +1,8 @@
 ﻿using DatingApp.BLL.Extensions;
+using DatingApp.DAL.DTO.User;
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DatingApp.DAL.Model
 {
@@ -28,18 +30,17 @@ namespace DatingApp.DAL.Model
         public string Interests { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
-        public List<UserPhoto> Photos { get; set; } = new();
+        public List<UserPhotoDto> Photos { get; set; } = new();
 
         public int GetAge()
         {
             return DateOfBirth.CalculateAge();
         }
-    }
 
-    public class UserPhoto
-    {
-        public string Id { get; set; }
-        public string Url { get; set; }
-        public bool IsMain { get; set; }
+        public string GetPhotoUrl()
+        {
+            var url = Photos.FirstOrDefault(p => p.IsMain).Url;
+            return url;
+        }
     }
 }
