@@ -2,6 +2,7 @@
 using DatingApp.BLL.Repository;
 using DatingApp.DAL;
 using DatingApp.DAL.DTO.Account;
+using DatingApp.DAL.DTO.User;
 using DatingApp.DAL.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,12 @@ namespace DatingApp.FrontEndAPI.Controllers
     public class UserController : BaseApiController
     {
         private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
         //private readonly ILogger _log;
         private IMapper _map { get; set; }
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserRepository userRepository, IMapper mapper)
         {
             if (_map == null)
             {
@@ -35,6 +37,7 @@ namespace DatingApp.FrontEndAPI.Controllers
                 _map = config.CreateMapper();
             }
 
+            _mapper ??= mapper;
             _userRepository ??= userRepository;
         }
 
@@ -44,7 +47,7 @@ namespace DatingApp.FrontEndAPI.Controllers
             try
             {
                 var listUser = await _userRepository.GetUsersAsync();
-                var dto = _map.Map<List<UserResponseDto>>(listUser);
+                var dto = _mapper.Map<IEnumerable<UserDto>>(listUser);
                 return new OkObjectResult(dto);
             }
             catch (Exception e)
@@ -53,12 +56,14 @@ namespace DatingApp.FrontEndAPI.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(string id)
+        [HttpGet("{username}")]
+        public async Task<ActionResult> GetUser(string username)
         {
             try
             {
-                return await _userRepository.GetUserByIdAsync(id);
+                var user = await _userRepository.GetUserByUsernameAsync(username);
+
+                return new OkObjectResult(_mapper.Map<UserDto>(user));
             }
             catch (Exception e)
             {
