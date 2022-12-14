@@ -1,4 +1,5 @@
 ﻿using DatingApp.BLL.JWT;
+using DatingApp.BLL.Repository;
 using DatingApp.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +21,7 @@ namespace DatingApp.FrontEndAPI.Extensions
 
             services.AddCors();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             return services;
         }

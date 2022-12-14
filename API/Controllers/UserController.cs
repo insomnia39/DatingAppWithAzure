@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DatingApp.BLL.Repository;
 using DatingApp.DAL;
 using DatingApp.DAL.DTO.Account;
 using DatingApp.DAL.Model;
@@ -14,13 +15,13 @@ namespace DatingApp.FrontEndAPI.Controllers
     [Authorize]
     public class UserController : BaseApiController
     {
+        private readonly IUserRepository _userRepository;
+
         //private readonly ILogger _log;
-        private readonly ProfileContext _context;
         private IMapper _map { get; set; }
 
-        public UserController(ProfileContext context)
+        public UserController(IUserRepository userRepository)
         {
-            //_log ??= logger;
             if (_map == null)
             {
                 var config = new MapperConfiguration(cfg =>
@@ -34,16 +35,15 @@ namespace DatingApp.FrontEndAPI.Controllers
                 _map = config.CreateMapper();
             }
 
-            _context ??= context;
+            _userRepository ??= userRepository;
         }
 
-        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetUser()
         {
             try
             {
-                var listUser = await _context.User.ToListAsync();
+                var listUser = await _userRepository.GetUsersAsync();
                 var dto = _map.Map<List<UserResponseDto>>(listUser);
                 return new OkObjectResult(dto);
             }
@@ -58,7 +58,7 @@ namespace DatingApp.FrontEndAPI.Controllers
         {
             try
             {
-                return await _context.User.FindAsync(id);
+                return await _userRepository.GetUserByIdAsync(id);
             }
             catch (Exception e)
             {

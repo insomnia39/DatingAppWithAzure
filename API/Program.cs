@@ -2,6 +2,7 @@ using DatingApp.FrontEndAPI.Extensions;
 using DatingApp.FrontEndAPI.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
 namespace DatingApp.FrontEndAPI
 {
@@ -26,6 +27,21 @@ namespace DatingApp.FrontEndAPI
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+
+            //using var scope = app.Services.CreateScope();
+            //var services = scope.ServiceProvider;
+            //try
+            //{
+            //    var context = services.GetRequiredService<ProfileContext>();
+            //    await Seed.SeedUser(context);
+            //    await Seed.SeedPhoto(context);
+            //}
+            //catch (Exception e)
+            //{
+            //    var logger = services.GetService<ILogger<Program>>();
+            //    logger.LogError(e, "Error Occured");
+            //}
+
             app.Run();
         }
     }
