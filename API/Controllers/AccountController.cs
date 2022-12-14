@@ -25,7 +25,7 @@ namespace DatingApp.FrontEndAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDto dto)
+        public async Task<ActionResult<UserLoginDto>> Register(RegisterDto dto)
         {
             if (UsernameExist(dto.Username)) return new BadRequestObjectResult("Username already taken");
 
@@ -42,11 +42,11 @@ namespace DatingApp.FrontEndAPI.Controllers
             _context.User.Add(user);
             await _context.SaveChangesAsync();
 
-            return new UserDto { Username = user.Username, Token = _tokenService.CreateToken(user) };
+            return new UserLoginDto { Username = user.Username, Token = _tokenService.CreateToken(user) };
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult<UserDto>> Login(LoginRequestDto dto)
+        public async Task<ActionResult<UserLoginDto>> Login(LoginRequestDto dto)
         {
             var users = _context.User.Where(p => p.Username == dto.Username.ToLower()).ToList();
 
@@ -63,7 +63,7 @@ namespace DatingApp.FrontEndAPI.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) return new BadRequestObjectResult("Invalid username or password");
             }
 
-            return new UserDto { Username = user.Username, Token = _tokenService.CreateToken(user) };
+            return new UserLoginDto { Username = user.Username, Token = _tokenService.CreateToken(user) };
         }
 
         public bool UsernameExist(string username)
