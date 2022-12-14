@@ -1,5 +1,8 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using DatingApp.DAL.Model;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System;
 
 namespace DatingApp.DAL
 {
@@ -16,6 +19,7 @@ namespace DatingApp.DAL
         }
 
         public DbSet<Model.User> User { get; set; }
+        public DbSet<Photo> Photo { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,12 +30,15 @@ namespace DatingApp.DAL
                     entity.HasNoDiscriminator();
                     entity.HasKey(p => p.Id);
                     entity.HasPartitionKey(p => p.Partition);
-                    entity.Property(p => p.Partition).ToJsonProperty("partition");
-                    entity.Property(p => p.Id).ToJsonProperty("id");
-                    entity.Property(p => p.Gender).ToJsonProperty("gender");
-                    entity.Property(p => p.Username).ToJsonProperty("username");
-                    entity.Property(p => p.PasswordHash).ToJsonProperty("passwordHash");
-                    entity.Property(p => p.PasswordSalt).ToJsonProperty("passwordSalt");
+                });
+
+            modelBuilder.Entity<Photo>(
+                entity =>
+                {
+                    entity.ToContainer(nameof(Photo));
+                    entity.HasNoDiscriminator();
+                    entity.HasKey(p => p.Id);
+                    entity.HasPartitionKey(p => p.Partition);
                 });
         }
     }
