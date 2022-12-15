@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using DatingApp.BLL.Repository;
-using DatingApp.DAL;
 using DatingApp.DAL.DTO.Account;
 using DatingApp.DAL.DTO.User;
 using DatingApp.DAL.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DatingApp.FrontEndAPI.Controllers
@@ -69,6 +68,21 @@ namespace DatingApp.FrontEndAPI.Controllers
             {
                 return new BadRequestObjectResult(e.Message);
             }
+        }
+
+        [HttpPut]
+        public async Task<ActionResult> UpdateUser(UserUpdateDto dto)
+        {
+            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _userRepository.GetUserByUsernameAsync(username);
+
+            if (user == null) return NotFound();
+
+            _mapper.Map(dto, user);
+
+            if (await _userRepository.SaveAllAsync()) return NoContent();
+
+            return BadRequest("Failed to Update user");
         }
     }
 }
