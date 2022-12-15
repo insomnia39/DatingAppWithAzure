@@ -10,6 +10,7 @@ namespace DatingApp.BLL.Helpers
         {
             CreateMap<User, UserDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(p => p.Id));
+            CreateMap<UserUpdateDto, User>();
         }
     }
 }
