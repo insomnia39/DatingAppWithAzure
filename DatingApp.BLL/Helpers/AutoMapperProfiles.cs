@@ -8,7 +8,8 @@ namespace DatingApp.BLL.Helpers
     {
         public AutoMapperProfiles()
         {
-            CreateMap<User, UserDto>();
+            CreateMap<User, UserDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(p => p.Id));
         }
     }
 }
