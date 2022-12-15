@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DatingApp.DAL.DTO.User
 {
     public class UserDto
     {
+        public string Id { get; set; }
         public string Username { get; set; }
         public string PhotoUrl { get; set; }
         public string Gender { get; set; }
@@ -16,5 +18,6 @@ namespace DatingApp.DAL.DTO.User
         public string Interests { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
+        public List<UserPhotoDto> Photos { get; set; }
     }
 }
