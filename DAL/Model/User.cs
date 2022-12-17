@@ -39,7 +39,7 @@ namespace DatingApp.DAL.Model
 
         public string GetPhotoUrl()
         {
-            var url = Photos.FirstOrDefault(p => p.IsMain).Url;
+            var url = Photos.FirstOrDefault(p => p.IsMain)?.Url;
             return url;
         }
     }
