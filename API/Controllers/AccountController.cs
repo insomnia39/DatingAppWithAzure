@@ -1,9 +1,11 @@
-﻿using DatingApp.BLL.JWT;
+﻿using AutoMapper;
+using DatingApp.BLL.JWT;
 using DatingApp.DAL;
 using DatingApp.DAL.DTO.Account;
 using DatingApp.DAL.DTO.User;
 using DatingApp.DAL.Model;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Common;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -17,11 +19,13 @@ namespace DatingApp.FrontEndAPI.Controllers
     {
         private readonly ProfileContext _context;
         private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
-        public AccountController(ProfileContext context, ITokenService tokenService)
+        public AccountController(ProfileContext context, ITokenService tokenService, IMapper mapper)
         {
             _tokenService ??= tokenService;
             _context ??= context;
+            _mapper ??= mapper;
         }
 
         [HttpPost("register")]
@@ -29,20 +33,22 @@ namespace DatingApp.FrontEndAPI.Controllers
         {
             if (UsernameExist(dto.Username)) return new BadRequestObjectResult("Username already taken");
 
+            var user = _mapper.Map<User>(dto);
+
             using var hmac = new HMACSHA512();
 
-            var user = new User
-            {
-                Username = dto.Username.ToLower(),
-                Gender = dto.Gender.Equals(Gender.Male) ? Gender.Male : Gender.Female,
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password)),
-                PasswordSalt = hmac.Key
-            };
+            user.Username = dto.Username.ToLower();
+            user.Gender = dto.Gender.Equals(Gender.Male) ? Gender.Male : Gender.Female;
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password));
+            user.PasswordSalt = hmac.Key;
 
             _context.User.Add(user);
             await _context.SaveChangesAsync();
 
-            return new UserLoginDto { Username = user.Username, Token = _tokenService.CreateToken(user), PhotoUrl = user.GetPhotoUrl() };
+            var returnDto = _mapper.Map<UserLoginDto>(user);
+
+            returnDto.Token = _tokenService.CreateToken(user);
+            return returnDto;
         }
 
         [HttpPost("Login")]
@@ -63,7 +69,9 @@ namespace DatingApp.FrontEndAPI.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) return new BadRequestObjectResult("Invalid username or password");
             }
 
-            return new UserLoginDto { Username = user.Username, Token = _tokenService.CreateToken(user), PhotoUrl = user.GetPhotoUrl()};
+            var returnDto = _mapper.Map<UserLoginDto>(user);
+            returnDto.Token = _tokenService.CreateToken(user);
+            return returnDto;
         }
 
         public bool UsernameExist(string username)
