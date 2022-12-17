@@ -37,46 +37,27 @@ namespace DatingApp.DAL.Data
                     user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("123123"));
                     user.PasswordSalt = hmac.Key;
 
+                    foreach (var photo in user.Photos)
+                    {
+                        var newPhoto = new Photo();
+                        newPhoto.Url = photo.Url;
+                        newPhoto.UserId = user.Id;
+                        newPhoto.Partition += "/" + newPhoto.UserId;
+                        newPhoto.PublicId = "dummy-seed-generator";
+                        context.Photo.Add(newPhoto);
+
+                        photo.Id = newPhoto.Id;
+                    }
+
                     context.User.Add(user);
                 }
 
                 await context.SaveChangesAsync();
             }
-			catch (Exception e)
+			catch (Exception)
 			{
 				throw;
 			}
         }
-
-        public static async Task SeedPhoto(ProfileContext context)
-        {
-            try
-            {
-                if (context.Photo.ToList().Any()) return;
-
-                var userData = context.User.ToList();
-
-                foreach (var user in userData)
-                {
-                    foreach (var photo in user.Photos)
-                    {
-                        var newPhoto = new Photo();
-                        newPhoto.Url = photo.Url;
-                        newPhoto.IsMain = photo.IsMain;
-                        newPhoto.UserId = user.Id;
-                        newPhoto.Partition += "/" + newPhoto.UserId;
-                        context.Photo.Add(newPhoto);
-                    }
-                }
-
-                await context.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                throw;
-            }
-        }
     }
-
-
 }
