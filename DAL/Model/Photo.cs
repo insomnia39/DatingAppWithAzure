@@ -3,7 +3,7 @@
     public class Photo : ModelBase
     {
         public string Url { get; set; }
-        public bool IsMain { get; set; }
         public string UserId { get; set; }
+        public string PublicId { get; set; }
     }
 }
