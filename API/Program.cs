@@ -1,14 +1,18 @@
+using DatingApp.DAL;
+using DatingApp.DAL.Data;
 using DatingApp.FrontEndAPI.Extensions;
 using DatingApp.FrontEndAPI.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace DatingApp.FrontEndAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
@@ -28,19 +32,18 @@ namespace DatingApp.FrontEndAPI
             app.UseAuthorization();
             app.MapControllers();
 
-            //using var scope = app.Services.CreateScope();
-            //var services = scope.ServiceProvider;
-            //try
-            //{
-            //    var context = services.GetRequiredService<ProfileContext>();
-            //    await Seed.SeedUser(context);
-            //    await Seed.SeedPhoto(context);
-            //}
-            //catch (Exception e)
-            //{
-            //    var logger = services.GetService<ILogger<Program>>();
-            //    logger.LogError(e, "Error Occured");
-            //}
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+            try
+            {
+                var context = services.GetRequiredService<ProfileContext>();
+                await Seed.SeedUser(context);
+            }
+            catch (Exception e)
+            {
+                var logger = services.GetService<ILogger<Program>>();
+                logger.LogError(e, "Error Occured");
+            }
 
             app.Run();
         }

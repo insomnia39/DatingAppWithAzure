@@ -39,7 +39,7 @@ namespace DatingApp.FrontEndAPI.Controllers
 
                 return thingToReturn;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }

@@ -1,4 +1,6 @@
-﻿using DatingApp.BLL.JWT;
+﻿using DatingApp.BLL.Helpers;
+using DatingApp.BLL.JWT;
+using DatingApp.BLL.Photo;
 using DatingApp.BLL.Repository;
 using DatingApp.DAL;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +26,9 @@ namespace DatingApp.FrontEndAPI.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
+            services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<IPhotoRepository, PhotoRepository>();
 
             return services;
         }
