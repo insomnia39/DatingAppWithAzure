@@ -1,27 +1,44 @@
-<form #registerForm="ngForm" (ngSubmit)="register()" autocomplete="off">
+<form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && register()" autocomplete="off">
     <h2 class="text-center text-primary">Sign Up</h2>
     <hr>
+
     <div class="mb-3">
-        <input type="text"
-        class="form-control"
-        name="username"
-        [(ngModel)]="model.username"
-        placeholder="username">
+        <label class="mr-4">I am a: </label>
+        <label class="form-check-label ml-1 mr-4">
+            <input type="radio" class="form-check-input" value="Male" formControlName="gender"> Male
+        </label>
+        <label class="form-check-label">
+            <input type="radio" class="form-check-input" value="Female" formControlName="gender"> Female
+        </label>
     </div>
-    <div class="mb-3">
-        <input type="text"
-        class="form-control"
-        name="password"
-        [(ngModel)]="model.password"
-        placeholder="password">
+
+    <app-text-input [formControl]= "$any(registerForm.controls['username'])" [label]="'Username'"></app-text-input>
+    <app-text-input [formControl]= "$any(registerForm.controls['knownAs'])" [label]="'Known As'"></app-text-input>
+    <app-date-picker [formControl]= "$any(registerForm.controls['dateOfBirth'])" [label]="'Date of Birth'" [maxDate]="maxDate"></app-date-picker>
+    <app-text-input [formControl]= "$any(registerForm.controls['city'])" [label]="'City'"></app-text-input>
+    <app-text-input [formControl]= "$any(registerForm.controls['country'])" [label]="'Country'"></app-text-input>
+    <app-text-input [formControl]= "$any(registerForm.controls['password'])" [label]="'Password'" [type]="'password'"></app-text-input>
+    <app-text-input [formControl]= "$any(registerForm.controls['confirmPassword'])" [label]="'Confirm Password'" [type]="'password'"></app-text-input>
+    
+    <div class="row" *ngIf="validationErrors">
+        <ul class="text-danger">
+            <li *ngFor="let erorr of validationErrors">
+                {{erorr}}
+            </li>
+        </ul>
     </div>
-    <small>Gender</small>
+    
+    <!-- <small>Gender</small>
     <div class="mb-3">
-        <select name="gender" class="form-control" [(ngModel)]="model.gender">
+        <select name="gender" 
+            class="form-control" 
+            [class.is-invalid]="registerForm.get('gender')?.errors && registerForm.get('gender')?.touched"
+            formControlName="gender">
             <option value="Male">Male</option>
             <option value="Female">Female</option>
         </select>
-    </div>
+        <div class="invalid-feedback" *ngIf="registerForm.get('gender')?.errors && registerForm.get('gender')?.touched">Gender is required</div>
+    </div> -->
     <div class="text-center">
         <button class="btn btn-success mr-2" type="submit">Register</button>
         <button class="btn btn-secondary" type="button" (click)="cancel()">Cancel</button>
