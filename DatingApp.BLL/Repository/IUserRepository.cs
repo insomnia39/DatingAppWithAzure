@@ -1,4 +1,5 @@
-﻿using DatingApp.DAL.Model;
+﻿using DatingApp.BLL.Helpers;
+using DatingApp.DAL.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace DatingApp.BLL.Repository
     {
         void Update(User user);
         Task<bool> SaveAllAsync();
-        Task<IEnumerable<User>> GetUsersAsync();
+        Task<PagedList<User>> GetUsersAsync(UserParams userParams);
         Task<User> GetUserByIdAsync(string id);
         Task<User> GetUserByUsernameAsync(string username);
     }
