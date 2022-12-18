@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DatingApp.BLL.Helpers;
 using DatingApp.BLL.Photo;
 using DatingApp.BLL.Repository;
 using DatingApp.DAL.DTO.Account;
@@ -49,11 +50,22 @@ namespace DatingApp.FrontEndAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUser()
+        public async Task<IActionResult> GetUser([FromQuery] UserParams userParams)
         {
             try
             {
-                var listUser = await _userRepository.GetUsersAsync();
+                var currentUser = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
+                userParams.CurrentUsername = currentUser.Username;
+                if (string.IsNullOrEmpty(userParams.Gender))
+                {
+                    userParams.Gender = currentUser.Gender == UserProperty.Gender.Female
+                    ? UserProperty.Gender.Male
+                    : UserProperty.Gender.Female;
+                }
+
+                var listUser = await _userRepository.GetUsersAsync(userParams);
+                Response.AddPaginationHeader(new PaginationHeader(listUser.CurrentPage, listUser.PageSize,
+                    listUser.TotalCount, listUser.TotalPages));
                 var dto = _mapper.Map<IEnumerable<UserDto>>(listUser);
                 return new OkObjectResult(dto);
             }
