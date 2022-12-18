@@ -1,7 +1,9 @@
-﻿using DatingApp.DAL;
+﻿using DatingApp.BLL.Helpers;
+using DatingApp.DAL;
 using DatingApp.DAL.Model;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DatingApp.BLL.Repository
@@ -24,9 +26,21 @@ namespace DatingApp.BLL.Repository
             return await _context.User.SingleOrDefaultAsync(x => x.Username == username);
         }
 
-        public async Task<IEnumerable<User>> GetUsersAsync()
+        public async Task<PagedList<User>> GetUsersAsync(UserParams userParams)
         {
-            return await _context.User.ToListAsync();
+            var minDob = DateTime.Today.AddYears(-userParams.MaxAge);
+            var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+            var query = _context.User.AsQueryable();
+            query = query.Where(p => p.Username != userParams.CurrentUsername);
+            query = query.Where(p => p.Gender == userParams.Gender);
+
+            query = query.Where(p => p.DateOfBirth >= minDob && p.DateOfBirth <= maxDob);
+            query = userParams.OrderBy switch
+            {
+                "created" => query.OrderByDescending(p => p.Created),
+                _ => query.OrderByDescending(p => p.LastActive)
+            };
+            return await PagedList<User>.CreateAsync(query.AsNoTracking(), userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<bool> SaveAllAsync()
