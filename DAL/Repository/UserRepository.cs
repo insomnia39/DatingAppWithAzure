@@ -1,12 +1,12 @@
-﻿using DatingApp.BLL.Helpers;
-using DatingApp.DAL;
+﻿using DatingApp.DAL.Helper;
 using DatingApp.DAL.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DatingApp.BLL.Repository
+namespace DatingApp.DAL.Repository
 {
     public class UserRepository : IUserRepository
     {
@@ -51,6 +51,11 @@ namespace DatingApp.BLL.Repository
         public void Update(User user)
         {
             _context.Entry(user).State = EntityState.Modified;
+        }
+
+        public async Task<List<User>> GetUserByIdAsync(List<string> listUserId)
+        {
+            return await _context.User.Where(p => listUserId.Contains(p.Id)).ToListAsync();
         }
     }
 }

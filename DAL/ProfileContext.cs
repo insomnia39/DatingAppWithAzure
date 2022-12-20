@@ -1,8 +1,5 @@
 ﻿using DatingApp.DAL.Model;
-using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System;
 
 namespace DatingApp.DAL
 {
@@ -15,11 +12,13 @@ namespace DatingApp.DAL
     {
         public ProfileContext(DbContextOptions options) : base(options)
         {
-            
+
         }
 
         public DbSet<Model.User> User { get; set; }
         public DbSet<Photo> Photo { get; set; }
+        public DbSet<MessageGroup> MessageGroup { get; set; }
+        public DbSet<Message> Message { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -40,6 +39,26 @@ namespace DatingApp.DAL
                     entity.HasKey(p => p.Id);
                     entity.HasPartitionKey(p => p.Partition);
                 });
+
+            modelBuilder.Entity<MessageGroup>(
+                entity =>
+                {
+                    entity.ToContainer(nameof(MessageGroup));
+                    entity.HasNoDiscriminator();
+                    entity.HasKey(p => p.Id);
+                    entity.HasPartitionKey(p => p.Partition);
+                }
+                );
+
+            modelBuilder.Entity<Message>(
+                entity =>
+                {
+                    entity.ToContainer(nameof(Message));
+                    entity.HasNoDiscriminator();
+                    entity.HasKey(p => p.Id);
+                    entity.HasPartitionKey(p => p.Partition);
+                }
+                );
         }
     }
 }
