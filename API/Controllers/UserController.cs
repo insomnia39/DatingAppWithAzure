@@ -5,14 +5,15 @@ using DatingApp.BLL.Repository;
 using DatingApp.DAL.DTO.Account;
 using DatingApp.DAL.DTO.User;
 using DatingApp.DAL.Extensions;
+using DatingApp.DAL.Helper;
 using DatingApp.DAL.Model;
+using DatingApp.DAL.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace DatingApp.FrontEndAPI.Controllers
@@ -134,7 +135,7 @@ namespace DatingApp.FrontEndAPI.Controllers
 
             if (await _userRepository.SaveAllAsync())
             {
-                return CreatedAtAction(nameof(GetUser), new {username = user.Username}, photoDto);
+                return CreatedAtAction(nameof(GetUser), new { username = user.Username }, photoDto);
             }
 
             return BadRequest("Problem adding photo");
@@ -181,7 +182,7 @@ namespace DatingApp.FrontEndAPI.Controllers
 
             user.Photos.Remove(photo);
 
-            return await _userRepository.SaveAllAsync() 
+            return await _userRepository.SaveAllAsync()
                 ? Ok()
                 : BadRequest("Problem deleting photo");
         }
