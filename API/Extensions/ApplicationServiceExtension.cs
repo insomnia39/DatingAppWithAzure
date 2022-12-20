@@ -1,8 +1,13 @@
 ﻿using DatingApp.BLL.Helpers;
 using DatingApp.BLL.JWT;
+using DatingApp.BLL.MessageGroupManagement;
+using DatingApp.BLL.MessageManagement;
 using DatingApp.BLL.Photo;
 using DatingApp.BLL.Repository;
+using DatingApp.BLL.UserManagement;
 using DatingApp.DAL;
+using DatingApp.DAL.Repository;
+using DatingApp.DAL.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +35,10 @@ namespace DatingApp.FrontEndAPI.Extensions
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IPhotoRepository, PhotoRepository>();
             services.AddScoped<LogUserActivity>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IMessageGroupService, MessageGroupService>();
+            services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IUserService, UserService>();
 
             return services;
         }

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using DatingApp.DAL.DTO.Account;
+using DatingApp.DAL.DTO.Message;
+using DatingApp.DAL.DTO.MessageGroup;
 using DatingApp.DAL.DTO.User;
 using DatingApp.DAL.Model;
 
@@ -15,6 +17,9 @@ namespace DatingApp.BLL.Helpers
             CreateMap<DAL.Model.Photo, UserPhotoDto>();
             CreateMap<RegisterDto, User>();
             CreateMap<User, UserLoginDto>();
+            CreateMap<CreateMessageDto, Message>();
+            CreateMap<Message, GetMessageDto>();
+            CreateMap<MessageGroup, GetMessageGroupDto>();
         } 
     }
 }

@@ -1,5 +1,5 @@
-﻿using DatingApp.BLL.Repository;
-using DatingApp.DAL.Extensions;
+﻿using DatingApp.DAL.Extensions;
+using DatingApp.DAL.Repository;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using System;
